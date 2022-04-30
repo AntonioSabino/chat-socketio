@@ -13,7 +13,7 @@ server.listen(3000, () => {
 
 app.use(express.static(path.join(__dirname, "public")));
 
-const connectedUsers = [];
+let connectedUsers = [];
 
 io.on("connection", (socket) => {
   console.log("Conectado IO");
@@ -24,5 +24,18 @@ io.on("connection", (socket) => {
     console.log(connectedUsers);
 
     socket.emit("user-ok", connectedUsers);
+    socket.broadcast.emit("list-update", {
+      joined: username,
+      list: connectedUsers,
+    });
+  });
+
+  socket.on("disconnect", () => {
+    connectedUsers = connectedUsers.filter((user) => user !== socket.username);
+    console.log(connectedUsers);
+    socket.broadcast.emit("list-update", {
+      left: socket.username,
+      list: connectedUsers,
+    });
   });
 });
