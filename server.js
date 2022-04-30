@@ -38,4 +38,14 @@ io.on("connection", (socket) => {
       list: connectedUsers,
     });
   });
+
+  socket.on("send-message", (message) => {
+    const obj = {
+      username: socket.username,
+      message,
+    };
+
+    socket.emit("show-message", obj);
+    socket.broadcast.emit("show-message", obj);
+  });
 });
