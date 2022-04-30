@@ -13,6 +13,16 @@ server.listen(3000, () => {
 
 app.use(express.static(path.join(__dirname, "public")));
 
+const connectedUsers = [];
+
 io.on("connection", (socket) => {
   console.log("Conectado IO");
+
+  socket.on("join-request", (username) => {
+    socket.username = username;
+    connectedUsers.push(username);
+    console.log(connectedUsers);
+
+    socket.emit("user-ok", connectedUsers);
+  });
 });
